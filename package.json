@@ -1,0 +1,54 @@
+{
+  "name": "svag-jest",
+  "version": "0.1.21",
+  "homepage": "https://github.com/svagcrew/svag-jest",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/svagcrew/svag-jest.git"
+  },
+  "bugs": {
+    "url": "https://github.com/svagcrew/svag-jest/issues"
+  },
+  "author": {
+    "name": "Sergei Dmitriev",
+    "url": "https://sergei.svag.group"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "./bin/**/*",
+    "./configs/**/*",
+    "./dist/**/*"
+  ],
+  "bin": {
+    "svag-jest": "./bin/index.js"
+  },
+  "scripts": {
+    "lint": "svag-lint lint",
+    "prettify": "svag-prettier prettify",
+    "types": "svag-ts types",
+    "build": "svag-ts build",
+    "watch": "svag-ts watch",
+    "prepare": "ts-patch install -s"
+  },
+  "dependencies": {
+    "dedent": "^1.5.3",
+    "eslint": "^9.0.0",
+    "lodash": "^4.17.21",
+    "svag-cli-utils": "^0.1.16",
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^7.6.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.0",
+    "@types/node": "^20.12.7",
+    "rimraf": "^5.0.5",
+    "svag-lint": "^0.1.21",
+    "svag-prettier": "^0.1.10",
+    "svag-ts": "^0.1.16",
+    "ts-patch": "^3.1.2"
+  }
+}
