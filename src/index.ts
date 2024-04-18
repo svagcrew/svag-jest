@@ -1,13 +1,12 @@
 import dedent from 'dedent'
 import { promises as fs } from 'fs'
-import _ from 'lodash'
 import path from 'path'
 import {
   defineCliApp,
   getPackageJson,
   isFileExists,
   log,
-  setPackageJsonData,
+  setPackageJsonDataItem,
   spawn,
   validateOrThrow,
 } from 'svag-cli-utils'
@@ -41,7 +40,7 @@ defineCliApp(async ({ cwd, command, flags, argr }) => {
 
   const installDeps = async () => {
     log.green('Installing dependencies...')
-    await spawn({ cwd: packageJsonDir, command: 'pnpm i -D svag-jest@latest jest @types/jest ts-jest' })
+    await spawn({ cwd: packageJsonDir, command: 'pnpm i -D svag-jest@latest jest@next @types/jest ts-jest' })
     log.toMemory.black(`${packageJsonPath}: dependencies installed`)
   }
 
@@ -54,11 +53,11 @@ defineCliApp(async ({ cwd, command, flags, argr }) => {
     const command = 'jest'
     if (!packageJsonData.scripts?.test) {
       packageJsonData.scripts.test = command
-      await setPackageJsonData({ cwd: packageJsonDir, packageJsonData })
+      await setPackageJsonDataItem({ cwd: packageJsonDir, key: 'scripts.test', value: command })
       log.toMemory.black(`${packageJsonPath}: script "lint" added`)
     } else if (packageJsonData.scripts.test.includes('no test specified')) {
       packageJsonData.scripts.test = command
-      await setPackageJsonData({ cwd: packageJsonDir, packageJsonData })
+      await setPackageJsonDataItem({ cwd: packageJsonDir, key: 'scripts.test', value: command })
       log.toMemory.black(`${packageJsonPath}: script "lint" updated`)
     } else {
       log.toMemory.black(`${packageJsonPath}: script "lint" already exists`)
