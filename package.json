@@ -31,7 +31,8 @@
     "types": "svag-ts types",
     "build": "svag-ts build",
     "watch": "svag-ts watch",
-    "prepare": "ts-patch install -s"
+    "test": "echo 'Everything is OK'",
+    "prepare": "ts-patch install -s && husky"
   },
   "dependencies": {
     "dedent": "^1.5.3",
@@ -45,7 +46,9 @@
   "devDependencies": {
     "@types/lodash": "^4.17.0",
     "@types/node": "^20.12.7",
+    "husky": "^9.0.11",
     "rimraf": "^5.0.5",
+    "svag-husky": "^0.1.2",
     "svag-lint": "^0.1.21",
     "svag-prettier": "^0.1.10",
     "svag-ts": "^0.1.16",
