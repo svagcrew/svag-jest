@@ -13,10 +13,9 @@ import {
 import z from 'zod'
 
 defineCliApp(async ({ cwd, command, args, flags }) => {
-  cwd = path.resolve(cwd, args[0] || '.')
-  const { packageJsonDir, packageJsonPath } = await getPackageJson({ cwd })
-
   const createConfigFile = async () => {
+    cwd = path.resolve(cwd, args[0] || '.')
+    const { packageJsonDir } = await getPackageJson({ cwd })
     log.green('Creating jest config file...')
     const configPath = path.resolve(packageJsonDir, 'jest.config.js')
     const { fileExists: configExists } = await isFileExists({ filePath: configPath })
@@ -40,14 +39,17 @@ defineCliApp(async ({ cwd, command, args, flags }) => {
   }
 
   const installDeps = async () => {
+    cwd = path.resolve(cwd, args[0] || '.')
+    const { packageJsonDir, packageJsonPath } = await getPackageJson({ cwd })
     log.green('Installing dependencies...')
     await spawn({ cwd: packageJsonDir, command: 'pnpm i -D svag-jest@latest jest@next @types/jest ts-jest' })
     log.toMemory.black(`${packageJsonPath}: dependencies installed`)
   }
 
   const addScriptToPackageJson = async () => {
+    cwd = path.resolve(cwd, args[0] || '.')
+    const { packageJsonDir, packageJsonPath, packageJsonData } = await getPackageJson({ cwd })
     log.green('Adding "test" script to package.json...')
-    const { packageJsonData, packageJsonPath } = await getPackageJson({ cwd: packageJsonDir })
     if (!packageJsonData.scripts) {
       packageJsonData.scripts = {}
     }
@@ -95,6 +97,7 @@ lint — eslint ...`)
       break
     }
     case 'ping': {
+      const { packageJsonDir } = await getPackageJson({ cwd })
       await spawn({ cwd: packageJsonDir, command: 'echo pong' })
       break
     }
