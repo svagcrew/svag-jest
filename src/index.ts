@@ -32,10 +32,15 @@ defineCliApp(async ({ cwd, command, args, argr, flags }) => {
       data: flags.config || flags.c || 'base',
     })
 
-    const configContent = dedent`import svagPrettierConfig${_.capitalize(configName)} from 'svag-prettier/configs/${configName}.js'
-    /** @type {import("prettier").Config} */
+    const configContent = dedent`import svagJestConfig${_.capitalize(configName)} from 'svag-jest/configs/${configName}.js'
+    import { pathsToModuleNameMapper } from 'ts-jest'
+    import tsconfigData from './tsconfig.json' with { type: 'json' }
+    /** @type {import('ts-jest').JestConfigWithTsJest} */
     export default {
-      ...svagPrettierConfig${_.capitalize(configName)},
+      ...svagJestConfig${_.capitalize(configName)},
+      ...(!!tsconfigData.compilerOptions?.paths && {
+        moduleNameMapper: pathsToModuleNameMapper(tsconfigData.compilerOptions.paths, { prefix: '<rootDir>/' }),
+      }),
     }
     `
     await fs.writeFile(configPath, configContent + '\n')
