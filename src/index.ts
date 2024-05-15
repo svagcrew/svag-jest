@@ -31,10 +31,10 @@ defineCliApp(async ({ cwd, command, args, flags }) => {
     })
 
     const configContent = dedent`import getSvagJestConfig${_.capitalize(configName)} from 'svag-jest/configs/${configName}.js'
-    import tsconfigData from './tsconfig.json' assert { type: 'json' }
+    import tsconfigData from './tsconfig.json' with { type: 'json' }
     /** @type {import('ts-jest').JestConfigWithTsJest} */
     export default {
-      ...getSvagJestConfig${_.capitalize(configName)}(tsconfigData),
+      ...getSvagJestConfig${_.capitalize(configName)}({ tsconfigData }),
     }
     `
     await fs.writeFile(configPath, configContent + '\n')
