@@ -11,19 +11,17 @@ import {
   spawn,
   validateOrThrow,
 } from 'svag-cli-utils'
-import { fileURLToPath } from 'url'
 import z from 'zod'
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-defineCliApp(async ({ cwd, command, args, argr, flags }) => {
+defineCliApp(async ({ cwd, command, args, flags }) => {
   const createConfigFile = async () => {
     cwd = path.resolve(cwd, args[0] || '.')
     const { packageJsonDir } = await getPackageJson({ cwd })
-    log.green('Creating prettier config file...')
-    const configPath = path.resolve(packageJsonDir, '.prettierrc.js')
+    log.green('Creating jest config file...')
+    const configPath = path.resolve(packageJsonDir, 'jest.config.js')
     const { fileExists: configExists } = await isFileExists({ filePath: configPath })
     if (configExists) {
-      log.toMemory.black(`${configPath}: prettier config file already exists`)
+      log.toMemory.black(`${configPath}: jest config file already exists`)
       return
     }
     const configName = validateOrThrow({
@@ -44,53 +42,41 @@ defineCliApp(async ({ cwd, command, args, argr, flags }) => {
     }
     `
     await fs.writeFile(configPath, configContent + '\n')
-    log.toMemory.black(`${configPath}: prettier config file created`)
-  }
-
-  const createIgnoreFile = async () => {
-    cwd = path.resolve(cwd, args[0] || '.')
-    const { packageJsonDir } = await getPackageJson({ cwd })
-    log.green('Creating prettier ignore file...')
-    const projectIgnorePath = path.resolve(packageJsonDir, '.prettierignore')
-    const { fileExists: projectIgnoreExists } = await isFileExists({ filePath: projectIgnorePath })
-    if (projectIgnoreExists) {
-      log.toMemory.black(`${projectIgnorePath}: prettier ignore file already exists`)
-      return
-    }
-
-    const srcIgnorePath = path.resolve(__dirname, '../.prettierignore')
-    const ignoreContent = await fs.readFile(srcIgnorePath, 'utf-8')
-    await fs.writeFile(projectIgnorePath, ignoreContent)
-    log.toMemory.black(`${projectIgnorePath}: prettier ignore file created`)
+    log.toMemory.black(`${configPath}: jest config file created`)
   }
 
   const installDeps = async () => {
     cwd = path.resolve(cwd, args[0] || '.')
     const { packageJsonDir, packageJsonPath } = await getPackageJson({ cwd })
     log.green('Installing dependencies...')
-    await spawn({ cwd: packageJsonDir, command: 'pnpm i -D svag-prettier@latest prettier' })
+    await spawn({ cwd: packageJsonDir, command: 'pnpm i -D svag-jest@latest jest@next @types/jest ts-jest' })
     log.toMemory.black(`${packageJsonPath}: dependencies installed`)
   }
 
   const addScriptToPackageJson = async () => {
     cwd = path.resolve(cwd, args[0] || '.')
-    const { packageJsonDir, packageJsonData, packageJsonPath } = await getPackageJson({ cwd })
-    log.green('Adding "prettify" script to package.json...')
-    if (!packageJsonData.scripts?.prettify) {
-      await setPackageJsonDataItem({ cwd: packageJsonDir, key: 'scripts.prettify', value: 'svag-prettier prettify' })
-      log.toMemory.black(`${packageJsonPath}: script "prettify" added`)
+    const { packageJsonDir, packageJsonPath, packageJsonData } = await getPackageJson({ cwd })
+    log.green('Adding "test" script to package.json...')
+    if (!packageJsonData.scripts) {
+      packageJsonData.scripts = {}
+    }
+    const command = 'jest'
+    if (!packageJsonData.scripts?.test) {
+      packageJsonData.scripts.test = command
+      await setPackageJsonDataItem({ cwd: packageJsonDir, key: 'scripts.test', value: command })
+      log.toMemory.black(`${packageJsonPath}: script "lint" added`)
+    } else if (packageJsonData.scripts.test.includes('no test specified')) {
+      packageJsonData.scripts.test = command
+      await setPackageJsonDataItem({ cwd: packageJsonDir, key: 'scripts.test', value: command })
+      log.toMemory.black(`${packageJsonPath}: script "lint" updated`)
     } else {
-      log.toMemory.black(`${packageJsonPath}: script "prettify" already exists`)
+      log.toMemory.black(`${packageJsonPath}: script "lint" already exists`)
     }
   }
 
   switch (command) {
     case 'create-config-file': {
       await createConfigFile()
-      break
-    }
-    case 'create-ignore-file': {
-      await createIgnoreFile()
       break
     }
     case 'install-deps': {
@@ -104,27 +90,17 @@ defineCliApp(async ({ cwd, command, args, argr, flags }) => {
     case 'init': {
       await installDeps()
       await createConfigFile()
-      await createIgnoreFile()
       await addScriptToPackageJson()
       break
     }
-    case 'prettify': {
-      const { packageJsonDir } = await getPackageJson({ cwd })
-      await spawn({
-        cwd: packageJsonDir,
-        command: `pnpm prettier --log-level warn --cache --write "./**/*.{ts,tsx,js,json,yml,scss}" ${argr.join(' ')}`,
-        exitOnFailure: true,
-      })
-      break
-    }
     case 'h': {
-      log.black(dedent`Commands:
-        install-deps
-        create-config-file
-        add-script-to-package-json
-        init — all above together
-        prettify — prettier ...
-      `)
+      log.black(`Commands:
+install-deps
+create-config-file
+add-script-to-package-json
+set-vscode-settings
+init — all above together
+lint — eslint ...`)
       break
     }
     case 'ping': {
