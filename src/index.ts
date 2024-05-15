@@ -45,7 +45,7 @@ defineCliApp(async ({ cwd, command, args, flags }) => {
     cwd = path.resolve(cwd, args[0] || '.')
     const { packageJsonDir, packageJsonPath } = await getPackageJson({ cwd })
     log.green('Installing dependencies...')
-    await spawn({ cwd: packageJsonDir, command: 'pnpm i -D svag-jest@latest jest@next @types/jest ts-jest' })
+    await spawn({ cwd: packageJsonDir, command: 'pnpm i -D svag-jest@latest jest@next @types/jest ts-jest cross-env' })
     log.toMemory.black(`${packageJsonPath}: dependencies installed`)
   }
 
@@ -56,17 +56,17 @@ defineCliApp(async ({ cwd, command, args, flags }) => {
     if (!packageJsonData.scripts) {
       packageJsonData.scripts = {}
     }
-    const command = 'jest'
+    const command = 'cross-env NODE_OPTIONS=--experimental-vm-modules jest'
     if (!packageJsonData.scripts?.test) {
       packageJsonData.scripts.test = command
       await setPackageJsonDataItem({ cwd: packageJsonDir, key: 'scripts.test', value: command })
-      log.toMemory.black(`${packageJsonPath}: script "lint" added`)
+      log.toMemory.black(`${packageJsonPath}: script "test" added`)
     } else if (packageJsonData.scripts.test.includes('no test specified')) {
       packageJsonData.scripts.test = command
       await setPackageJsonDataItem({ cwd: packageJsonDir, key: 'scripts.test', value: command })
-      log.toMemory.black(`${packageJsonPath}: script "lint" updated`)
+      log.toMemory.black(`${packageJsonPath}: script "test" updated`)
     } else {
-      log.toMemory.black(`${packageJsonPath}: script "lint" already exists`)
+      log.toMemory.black(`${packageJsonPath}: script "test" already exists`)
     }
   }
 
