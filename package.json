@@ -19,9 +19,10 @@
   },
   "type": "module",
   "files": [
+    "./src/**/*",
+    "./dist/**/*",
     "./bin/**/*",
-    "./configs/**/*",
-    "./dist/**/*"
+    "./configs/**/*"
   ],
   "bin": {
     "svag-jest": "./bin/index.js"
