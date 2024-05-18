@@ -56,14 +56,14 @@ defineCliApp(async ({ cwd, command, args, flags }) => {
     if (!packageJsonData.scripts) {
       packageJsonData.scripts = {}
     }
-    const command = 'cross-env NODE_OPTIONS=--experimental-vm-modules jest'
+    const cmd = 'cross-env NODE_OPTIONS=--experimental-vm-modules jest'
     if (!packageJsonData.scripts?.test) {
-      packageJsonData.scripts.test = command
-      await setPackageJsonDataItem({ cwd: packageJsonDir, key: 'scripts.test', value: command })
+      packageJsonData.scripts.test = cmd
+      await setPackageJsonDataItem({ cwd: packageJsonDir, key: 'scripts.test', value: cmd })
       log.toMemory.black(`${packageJsonPath}: script "test" added`)
     } else if (packageJsonData.scripts.test.includes('no test specified')) {
-      packageJsonData.scripts.test = command
-      await setPackageJsonDataItem({ cwd: packageJsonDir, key: 'scripts.test', value: command })
+      packageJsonData.scripts.test = cmd
+      await setPackageJsonDataItem({ cwd: packageJsonDir, key: 'scripts.test', value: cmd })
       log.toMemory.black(`${packageJsonPath}: script "test" updated`)
     } else {
       log.toMemory.black(`${packageJsonPath}: script "test" already exists`)
