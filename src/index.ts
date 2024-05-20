@@ -13,7 +13,7 @@ import {
 } from 'svag-cli-utils'
 import z from 'zod'
 
-defineCliApp(async ({ cwd, command, args, flags }) => {
+defineCliApp(async ({ cwd, command, args, flags, argr }) => {
   const createConfigFile = async () => {
     cwd = path.resolve(cwd, args[0] || '.')
     const { packageJsonDir } = await getPackageJson({ cwd })
@@ -56,7 +56,7 @@ defineCliApp(async ({ cwd, command, args, flags }) => {
     if (!packageJsonData.scripts) {
       packageJsonData.scripts = {}
     }
-    const cmd = 'cross-env NODE_OPTIONS=--experimental-vm-modules jest'
+    const cmd = 'svag-jest test'
     if (!packageJsonData.scripts?.test) {
       packageJsonData.scripts.test = cmd
       await setPackageJsonDataItem({ cwd: packageJsonDir, key: 'scripts.test', value: cmd })
@@ -89,14 +89,22 @@ defineCliApp(async ({ cwd, command, args, flags }) => {
       await addScriptToPackageJson()
       break
     }
+    case 'test': {
+      const { packageJsonDir } = await getPackageJson({ cwd })
+      await spawn({
+        cwd: packageJsonDir,
+        command: `cross-env NODE_OPTIONS=--experimental-vm-modules jest --color ${argr.join(' ')}`,
+      })
+      break
+    }
     case 'h': {
       log.black(`Commands:
 install-deps
 create-config-file
 add-script-to-package-json
-set-vscode-settings
 init — all above together
-lint — eslint ...`)
+test — cross-env NODE_OPTIONS=--experimental-vm-modules jest ...
+`)
       break
     }
     case 'ping': {
