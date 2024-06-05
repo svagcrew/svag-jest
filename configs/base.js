@@ -8,7 +8,10 @@ export default ({ tsconfigData } = {}) => {
     passWithNoTests: true,
     verbose: true,
     ...(!!tsconfigData?.compilerOptions?.paths && {
-      moduleNameMapper: pathsToModuleNameMapper(tsconfigData.compilerOptions.paths, { prefix: '<rootDir>/' }),
+      moduleNameMapper: pathsToModuleNameMapper(tsconfigData.compilerOptions.paths, {
+        prefix: '<rootDir>/',
+        useESM: true,
+      }),
     }),
   }
 }
