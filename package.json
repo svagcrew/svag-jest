@@ -55,7 +55,6 @@
     "svag-husky": "^0.1.2",
     "svag-lint": "^0.1.21",
     "svag-prettier": "^0.1.10",
-    "svag-ts": "^0.1.16",
-    "tsc-alias": "^1.8.10"
+    "svag-ts": "^0.1.16"
   }
 }
